@@ -15,13 +15,13 @@ export async function GET() {
         const result = await client.query('SELECT * FROM tbl_user');
         return new Response(JSON.stringify(result.rows), {
             status: 200,
-            headers: { "Content-Type": "application/json" },
+            headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
         });
     } catch (error) {
 
         return new Response(JSON.stringify({ error: "Internal Server Error" }), {
             status: 500,
-            headers: { "Content-Type": "application/json" },
+            headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
         });
     }
 }
@@ -32,20 +32,22 @@ export async function POST(request) {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
         console.log(hashedPassword);
-        const res = await client.query('INSERT INTO tbl_user (firstname, lastname, username, password) VALUES ($1, $2, $3, $4) RETURNING *', [firstname, lastname, username, hashedPassword]);
+        const res = await client.query(
+            'INSERT INTO tbl_user (firstname, lastname, username, password) VALUES ($1, $2, $3, $4) RETURNING *', 
+            [firstname, lastname, username, hashedPassword]
+        );
         return new Response(JSON.stringify(res.rows[0]), {
             status: 201,
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
         console.error(error);
-        return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+        return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' },
         });
     }
 }
-
 
 export async function PUT(request) {
     try {

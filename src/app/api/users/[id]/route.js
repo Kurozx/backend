@@ -8,7 +8,7 @@ const client = new Client({
 client.connect();
 export async function GET() {
   try {
-        const result = await client.query('SELECT * FROM tbl_users');
+        const result = await client.query('SELECT * FROM tbl_user');
         return new Response(JSON.stringify(result.rows), {
             status: 200,
             headers: { "Content-Type": "application/json" },

@@ -13,11 +13,10 @@ const client = new Client({
 
 client.connect();
 
-// app/api/login/route.js
 export async function POST(request) {
   try {
     const { username, password } = await request.json();
-    const res = await client.query('SELECT * FROM tbl_users WHERE username = $1', [username]);
+    const res = await client.query('SELECT * FROM tbl_user WHERE username = $1', [username]);
 
     if (res.rows.length === 0) {
       return new Response(JSON.stringify({ error: 'User not found' }), {
@@ -37,6 +36,7 @@ export async function POST(request) {
         headers: { 'Content-Type': 'application/json' },
       });
     }else{
+
 
     // สมมติว่าเราสร้าง JWT สำหรับการล็อกอิน (สามารถใช้ library เช่น jsonwebtoken)
     // Generate JWT token
