@@ -12,7 +12,7 @@ const client = new Client({
 client.connect();
 export async function GET() {
     try {
-        const result = await client.query('SELECT * FROM tbl_user');
+        const result = await client.query('SELECT * FROM tbl_user ORDER BY id ASC');
         return new Response(JSON.stringify(result.rows), {
             status: 200,
             headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
@@ -33,41 +33,41 @@ export async function POST(request) {
         const hashedPassword = await bcrypt.hash(password, 10);
         console.log(hashedPassword);
         const res = await client.query(
-            'INSERT INTO tbl_user (firstname, lastname, username, password) VALUES ($1, $2, $3, $4) RETURNING *', 
+            'INSERT INTO tbl_user (firstname, lastname, username, password) VALUES ($1, $2, $3, $4) RETURNING *',
             [firstname, lastname, username, hashedPassword]
         );
         return new Response(JSON.stringify(res.rows[0]), {
             status: 201,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
         });
     } catch (error) {
         console.error(error);
         return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
         });
     }
 }
 
 export async function PUT(request) {
     try {
-        const { id, firstname, lastname } = await request.json();
-        const res = await client.query('UPDATE tbl_user SET firstname = $1, lastname = $2 WHERE id = $3 RETURNING *', [firstname, lastname, id]);
+        const { id, firstname, lastname, username, password } = await request.json();
+        const res = await client.query('UPDATE tbl_user SET firstname = $1, lastname = $2, username = $3, password = $4 WHERE id = $5 RETURNING *', [firstname, lastname, username, password, id]);
         if (res.rows.length === 0) {
             return new Response(JSON.stringify({ error: 'User not found' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
             });
         }
         return new Response(JSON.stringify(res.rows[0]), {
             status: 200,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
         });
     } catch (error) {
         console.error(error);
         return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
         });
     }
 }
@@ -76,22 +76,22 @@ export async function PUT(request) {
 export async function DELETE(request) {
     try {
         const { id } = await request.json();
-        const res = await client.query('DELETE FROM tbl_user WHERE id = $1 RETURNING *', [id]);
+        const res = await client.query('DELETE FROM tbl_users WHERE id = $1 RETURNING *', [id]);
         if (res.rows.length === 0) {
             return new Response(JSON.stringify({ error: 'User not found' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
             });
         }
         return new Response(JSON.stringify(res.rows[0]), {
             status: 200,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
         });
     } catch (error) {
         console.error(error);
-        return new Response(JSON.stringify({ error: error.message }), {
+        return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
         });
     }
 }
