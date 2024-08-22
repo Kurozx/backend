@@ -27,22 +27,22 @@ export async function GET(request, { params }) {
 export async function DELETE(request, { params }) {
     const { id } = params;
     try {
-        const res = await client.query('DELETE FROM tbl_user WHERE id = $1 RETURNING ', [id]);
+        const res = await client.query('DELETE FROM tbl_user WHERE id = $1 RETURNING *', [id]);
         if (res.rows.length === 0) {
             return new Response(JSON.stringify({ error: 'User not found' }), {
                 status: 404,
-                headers: { 'Access-Control-Allow-Origin': '', 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json' },
             });
         }
         return new Response(JSON.stringify(res.rows[0]), {
             status: 200,
-            headers: { 'Access-Control-Allow-Origin': '', 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
         console.error(error);
         return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
             status: 500,
-            headers: { 'Access-Control-Allow-Origin': '', 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' },
         });
     }
 }
