@@ -76,7 +76,7 @@ export async function PUT(request) {
 export async function DELETE(request) {
     try {
         const { id } = await request.json();
-        const res = await client.query('DELETE FROM tbl_users WHERE id = $1 RETURNING *', [id]);
+        const res = await client.query('DELETE FROM tbl_user WHERE id = $1 RETURNING *', [id]);
         if (res.rows.length === 0) {
             return new Response(JSON.stringify({ error: 'User not found' }), {
                 status: 404,
